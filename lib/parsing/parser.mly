@@ -3,24 +3,25 @@
   open Ast.Choreo
 %}
 
-%token <string> ID
-%token <int>    INT
-%token <string> STRING
-%token TRUE FALSE
-%token UNIT_T INT_T STRING_T BOOL_T
-%token FUN TYPE
-%token PLUS MINUS TIMES DIV
-%token AND OR
-%token EQ NEQ LT LEQ GT GEQ
-%token LPAREN RPAREN LBRACKET RBRACKET
-%token COMMA DOT COLON SEMICOLON
-%token VERTICAL UNDERSCORE
-%token COLONEQ ARROW TILDE_ARROW
-%token LET IN
-%token IF THEN ELSE
-%token FST SND LEFT RIGHT
-%token MATCH WITH
+%token <string * metainfo> ID
+%token <int * metainfo>    INT
+%token <string * metainfo> STRING
+%token <metainfo> TRUE FALSE
+%token <metainfo> UNIT_T INT_T STRING_T BOOL_T
+%token <metainfo> FUN TYPE
+%token <metainfo> PLUS MINUS TIMES DIV
+%token <metainfo> AND OR
+%token <metainfo> EQ NEQ LT LEQ GT GEQ
+%token <metainfo> LPAREN RPAREN LBRACKET RBRACKET
+%token <metainfo> COMMA DOT COLON SEMICOLON
+%token <metainfo> VERTICAL UNDERSCORE
+%token <metainfo> COLONEQ ARROW TILDE_ARROW
+%token <metainfo> LET IN
+%token <metainfo> IF THEN ELSE
+%token <metainfo> FST SND LEFT RIGHT
+%token <metainfo> MATCH WITH
 %token EOF
+
 
 %type <Ast.Choreo.program> program
 %type <Ast.Choreo.decl_block> decl_block
@@ -28,6 +29,7 @@
 %type <Ast.Choreo.choreo_expr> choreo_expr
 %type <Ast.Choreo.pattern> pattern
 %type <Ast.Choreo.choreo_type> choreo_type
+%type <Ast.Local.metainfo> metainfo  //added metainfo
 %type <Ast.Local.local_expr> local_expr
 %type <Ast.Local.local_pattern> local_pattern
 %type <Ast.Local.local_type> local_type
@@ -61,9 +63,9 @@ decl_block:
 
 /* TODO: Removing the need for semicolons */
 statement:
-  | pattern COLON choreo_type SEMICOLON        { Decl ($1, $3)}
-  | pattern COLONEQ choreo_expr SEMICOLON      { Assign ($1, $3) }
-  | TYPE var_id COLONEQ choreo_type SEMICOLON? { TypeDecl ($2, $4) }
+  | pattern COLON(metainfo) choreo_type SEMICOLON        { Decl ($1, $3, metainfo)} // do i need to use both or put the () for both?
+  | pattern COLONEQ(metainfo) choreo_expr SEMICOLON      { Assign ($1, $3, metainfo) }
+  | TYPE(metainfo) var_id COLONEQ choreo_type SEMICOLON? { TypeDecl ($2, $4, metainfo) }
 
 /* Associativity increases from expr to expr3, with each precedence level falling through to the next. */
 choreo_expr:

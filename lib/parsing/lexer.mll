@@ -7,6 +7,11 @@
   let next_line lexbuf =
     let pos = lexbuf.lex_curr_p in
     lexbuf.lex_curr_p <- { pos with pos_lnum = pos.pos_lnum + 1; pos_bol = lexbuf.lex_curr_pos }
+
+  let filename = lexbuf.lex_curr_p.pos_fname (* gets the name of the file that was passed in from main.ml *)
+  let line = lexbuf.lex_curr_p.pos_lnum (* gets the name of the line from current position *)
+
+  let metainfo = (filename, line) (* puts the filename and line number into a tuple *)
 }
 
 let digit = ['0'-'9']
@@ -21,29 +26,29 @@ rule read = parse
   | white              { read lexbuf }
   | "--"               { read_single_line_comment lexbuf }
   | "{-"               { read_multi_line_comment lexbuf }
-  | '('                { LPAREN }
-  | ')'                { RPAREN }
-  | '['                { LBRACKET }
-  | ']'                { RBRACKET }
-  | ','                { COMMA }
-  | '.'                { DOT }
-  | ':'                { COLON }
-  | ';'                { SEMICOLON }
-  | '+'                { PLUS }
-  | '-'                { MINUS }
-  | '*'                { TIMES }
-  | '/'                { DIV }
-  | "&&"               { AND }
-  | "||"               { OR }
-  | "="                { EQ }
-  | "!="               { NEQ }
-  | "<"                { LT }
-  | "<="               { LEQ }
-  | ">"                { GT }
-  | ">="               { GEQ }
-  | '|'                { VERTICAL }
-  | '_'                { UNDERSCORE }
-  | ":="               { COLONEQ }
+  | '('                { LPAREN (metainfo) }
+  | ')'                { RPAREN (metainfo) }
+  | '['                { LBRACKET (metainfo) }
+  | ']'                { RBRACKET (metainfo) }
+  | ','                { COMMA (metainfo) }
+  | '.'                { DOT (metainfo) }
+  | ':'                { COLON (metainfo) }
+  | ';'                { SEMICOLON (metainfo) }
+  | '+'                { PLUS (metainfo) }
+  | '-'                { MINUS (metainfo) }
+  | '*'                { TIMES (metainfo) }
+  | '/'                { DIV (metainfo) }
+  | "&&"               { AND (metainfo) }
+  | "||"               { OR (metainfo) }
+  | "="                { EQ (metainfo) }
+  | "!="               { NEQ (metainfo) }
+  | "<"                { LT (metainfo) }
+  | "<="               { LEQ (metainfo) }
+  | ">"                { GT (metainfo) }
+  | ">="               { GEQ (metainfo) }
+  | '|'                { VERTICAL (metainfo) }
+  | '_'                { UNDERSCORE (metainfo) }
+  | ":="               { COLONEQ } (* add rest after meeting *)
   | "->"               { ARROW }
   | "~>"               { TILDE_ARROW }
   | "unit"             { UNIT_T }
@@ -64,16 +69,16 @@ rule read = parse
   | "fst"              { FST }
   | "snd"              { SND }
   | "left"             { LEFT }
-  | "right"            { RIGHT }
-  | integer as s       { INT (int_of_string s) }
-  | identifier as s    { ID (s) }
+  | "right"            { RIGHT } (* up to here? *)
+  | integer as s       { INT (int_of_string s * metainfo) }
+  | identifier as s    { ID (s * metainfo) }
   | '"'                { read_string (Buffer.create 17) lexbuf }
   | newline            { next_line lexbuf; read lexbuf }
   | _                  { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof                { EOF }
 
 and read_string buf = parse
-  | '"'       { STRING (Buffer.contents buf) }
+  | '"'       { STRING (Buffer.contents buf * metainfo) }
   | '\\' ('/' | '\\' | 'b' | 'f' | 'n' | 'r' | 't' as esc)
     { let c = match esc with
         | '/'  -> '/'
