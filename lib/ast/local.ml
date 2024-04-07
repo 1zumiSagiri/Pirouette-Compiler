@@ -1,7 +1,7 @@
-type info =
-  | Line of int
-  | Filename of string
-  | Metainfo of Filename * Line
+type filename = string
+type line = int
+
+type metainfo = filename * line 
 
 type value =
   [ `Int of int * metainfo
@@ -13,29 +13,29 @@ type var_id = VarId of string * metainfo
 type sync_label = LabelId of string * metainfo
 
 type bin_op =
-  | Plus * metainfo
-  | Minus * metainfo
-  | Times * metainfo
-  | Div * metainfo
-  | And * metainfo
-  | Or * metainfo
-  | Eq * metainfo
-  | Neq * metainfo
-  | Lt * metainfo
-  | Leq * metainfo
-  | Gt * metainfo
-  | Geq * metainfo
+  | Plus of metainfo
+  | Minus of metainfo
+  | Times of metainfo
+  | Div of metainfo
+  | And of metainfo
+  | Or of metainfo
+  | Eq of metainfo
+  | Neq of metainfo
+  | Lt of metainfo
+  | Leq of metainfo
+  | Gt of metainfo
+  | Geq of metainfo
 
 type local_type =
-  | TUnit * metainfo
-  | TInt * metainfo
-  | TString * metainfo
-  | TBool * metainfo
+  | TUnit of metainfo
+  | TInt of metainfo
+  | TString of metainfo
+  | TBool of metainfo
   | TProd of local_type * local_type * metainfo
   | TSum of local_type * local_type * metainfo
 
 type local_pattern =
-  | Default * metainfo
+  | Default of metainfo
   | Val of value * metainfo
   | Var of var_id * metainfo
   | Pair of local_pattern * local_pattern * metainfo
@@ -43,7 +43,7 @@ type local_pattern =
   | Right of local_pattern * metainfo
 
 type local_expr =
-  | Unit * metainfo
+  | Unit of metainfo
   | Val of value * metainfo
   | Var of var_id * metainfo
   | BinOp of local_expr * bin_op * local_expr * metainfo

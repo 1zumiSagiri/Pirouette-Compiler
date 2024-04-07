@@ -29,6 +29,8 @@
 %type <Ast.Choreo.choreo_expr> choreo_expr
 %type <Ast.Choreo.pattern> pattern
 %type <Ast.Choreo.choreo_type> choreo_type
+%type <Ast.Local.filename> filename  //added filename
+%type <Ast.Local.line> line  //added line
 %type <Ast.Local.metainfo> metainfo  //added metainfo
 %type <Ast.Local.local_expr> local_expr
 %type <Ast.Local.local_pattern> local_pattern
@@ -63,8 +65,8 @@ decl_block:
 
 /* TODO: Removing the need for semicolons */
 statement:
-  | pattern COLON(metainfo) choreo_type SEMICOLON        { Decl ($1, $3, metainfo)} // do i need to use both or put the () for both?
-  | pattern COLONEQ(metainfo) choreo_expr SEMICOLON      { Assign ($1, $3, metainfo) }
+  | pattern COLON(metainfo) choreo_type SEMICOLON        { Decl ($1, $3, metainfo)} // do i need to use both or put the () for both?, add first and last line for each node
+  | pattern COLONEQ(metainfo) choreo_expr SEMICOLON      { Assign ($1, $3, metainfo) } // have separate token metainfo and node metainfo (two different types)
   | TYPE(metainfo) var_id COLONEQ choreo_type SEMICOLON? { TypeDecl ($2, $4, metainfo) }
 
 /* Associativity increases from expr to expr3, with each precedence level falling through to the next. */
@@ -101,7 +103,7 @@ local_expr:
   | value                                           { Val $1 }                                                                    
   | var_id                                          { Var $1 }
   | local_expr bin_op local_expr                    { BinOp ($1, $2, $3) }
-  | LET var_id COLONEQ local_expr IN local_expr     { Let ($2, $4, $6) }
+  | LET var_id COLONEQ local_expr IN local_expr     { Let ($2, $4, $6) }  // let expression in line range, for varID may have to extract the string? use pattern matching or fst or tuple selection via function
   | LPAREN local_expr COMMA local_expr RPAREN       { Pair ($2, $4) }
   | FST local_expr                                  { Fst $2 }
   | SND local_expr                                  { Snd $2 }

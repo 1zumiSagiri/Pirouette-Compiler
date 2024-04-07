@@ -9,9 +9,10 @@
     lexbuf.lex_curr_p <- { pos with pos_lnum = pos.pos_lnum + 1; pos_bol = lexbuf.lex_curr_pos }
 
   let filename = lexbuf.lex_curr_p.pos_fname (* gets the name of the file that was passed in from main.ml *)
-  let line = lexbuf.lex_curr_p.pos_lnum (* gets the name of the line from current position *)
+  let line = lexbuf.lex_curr_p.pos_lnum (* gets the name of the line from current position, must be dynamic and update because immutable*) 
 
-  let metainfo = (filename, line) (* puts the filename and line number into a tuple *)
+  let metainfo = (filename, line) (* puts the filename and line number into a tuple, turn this into a function to update line num*)
+
 }
 
 let digit = ['0'-'9']
@@ -70,15 +71,15 @@ rule read = parse
   | "snd"              { SND }
   | "left"             { LEFT }
   | "right"            { RIGHT } (* up to here? *)
-  | integer as s       { INT (int_of_string s * metainfo) }
-  | identifier as s    { ID (s * metainfo) }
+  | integer as s       { INT (int_of_string s, metainfo) }
+  | identifier as s    { ID (s, metainfo) }
   | '"'                { read_string (Buffer.create 17) lexbuf }
   | newline            { next_line lexbuf; read lexbuf }
   | _                  { raise (SyntaxError ("Unexpected char: " ^ Lexing.lexeme lexbuf)) }
   | eof                { EOF }
 
 and read_string buf = parse
-  | '"'       { STRING (Buffer.contents buf * metainfo) }
+  | '"'       { STRING (Buffer.contents buf, metainfo) }
   | '\\' ('/' | '\\' | 'b' | 'f' | 'n' | 'r' | 't' as esc)
     { let c = match esc with
         | '/'  -> '/'
