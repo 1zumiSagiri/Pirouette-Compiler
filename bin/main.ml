@@ -11,5 +11,5 @@ let () =
     let lexbuf = Lexing.from_channel file_ic in
     lexbuf.lex_curr_p <- { lexbuf.lex_curr_p with pos_fname = filename } in (* sets the filename in the lexbuf *)
     let program = parse_program lexbuf in
-    print_endline (dump_choreo_ast program);
+    (* print_endline (dump_choreo_ast program); *)
     close_in file_ic

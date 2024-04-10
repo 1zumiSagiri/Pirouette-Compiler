@@ -56,14 +56,14 @@ rule read = parse
   | "int"              { INT_T }
   | "string"           { STRING_T }
   | "bool"             { BOOL_T }
-  | "fun"              { FUN }
-  | "type"             { TYPE }
+  | "fun"              { FUN (metainfo)}
+  | "type"             { TYPE (metainfo)}
   | "true"             { TRUE }
   | "false"            { FALSE }
   | "if"               { IF }
   | "then"             { THEN }
   | "else"             { ELSE }
-  | "match"            { MATCH }
+  | "match"            { MATCH } 
   | "with"             { WITH }
   | "let"              { LET }
   | "in"               { IN }

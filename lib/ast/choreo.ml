@@ -33,9 +33,9 @@ type choreo_expr =
   | Match of choreo_expr * (pattern * choreo_expr) list
 
 and statement =
-  | Decl of pattern * choreo_type
-  | Assign of pattern * choreo_expr
-  | TypeDecl of var_id * choreo_type
+  | Decl of pattern * choreo_type * metainfo
+  | Assign of pattern * choreo_expr * metainfo
+  | TypeDecl of var_id * choreo_type * metainfo
 
 and decl_block = statement list
 
