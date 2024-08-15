@@ -138,17 +138,17 @@ and check_local_exp ctx e =
   | Ast.Local.Left e -> (
       match check_local_exp ctx e with
       | Ok t -> Ok (Ast.Local.TSum (t, Ast.Local.TUnit))
-      | _ -> handle_err BopErr "Local.TInt -> Local.TUnit")
+      | _ -> handle_err LocalExpErr "Unimplement -> Local.TUnit")
   | Ast.Local.Right e -> (
       match check_local_exp ctx e with
       | Ok t -> Ok (Ast.Local.TSum (Ast.Local.TUnit, t))
-      | _ -> handle_err BopErr "Local.TInt -> Local.TUnit")
+      | _ -> handle_err LocalExpErr "Unimplement -> Local.TUnit")
   | Ast.Local.Match (e, cases) ->
       let e_typ = check_local_exp ctx e in
       match cases with
         | [] -> handle_err LocalExpErr "Empty case"
         | (p1, e1) :: tl ->
             let r1 = check_local_case ctx e_typ p1 e1 in
-            if r1 = Ok Ast.Local.TUnit then
-              check_local_exp ctx (Ast.Local.Match (e, tl))
-            else r1
+            match r1 with
+            | Ok _ -> check_local_exp ctx (Ast.Local.Match (e, tl))
+            | Error err -> handle_err LocalExpErr ("Error in case: " ^ err)
