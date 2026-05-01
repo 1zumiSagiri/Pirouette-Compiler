@@ -73,9 +73,9 @@ let emit_toplevel_http out_chan (loc_ids : string list)
     in
     [%stri
       let () =
-        Domain.spawn
-          (Send_receive.init_http_server
-             [%e Ast_builder.Default.estring ~loc loc_id]);
+          let _t = Domain.spawn
+          (fun () -> (Send_receive.init_http_server
+             [%e Ast_builder.Default.estring ~loc loc_id])) in 
         Eio_main.run @@ fun env ->
         let client = Cohttp_eio.Client.make ~https:None env#net in
         Eio.Switch.run ~name:"run_switch" @@ fun sw ->
