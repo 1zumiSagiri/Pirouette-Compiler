@@ -2,6 +2,7 @@
 
 ```sh
 opam install . --deps-only --with-test
+opam install ./http_pirc.opam
 ```
 
 ## Build pirc
