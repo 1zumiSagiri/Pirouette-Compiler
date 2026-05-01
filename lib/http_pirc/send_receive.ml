@@ -43,12 +43,7 @@ let get_header =
   let header_to_send = Http.Header.add new_header "Connection" "close" in
   header_to_send
 
-(* Function to marshal data *)
-let marshal_data data =
-  try
-    let result = Marshal.to_string data [] in
-    result
-  with e -> raise e
+let marshal_data data = Marshal.to_string data []
 
 (** [unmarshal_data data_str] is [Ok value] containing the unmarshaled OCaml
     value if [data_str] is a valid marshaled string, and [Error msg] if
