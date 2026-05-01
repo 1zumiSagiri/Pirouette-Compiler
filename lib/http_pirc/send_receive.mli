@@ -34,8 +34,8 @@ val unmarshal_data : string -> ('a, string) result
     [Ok value] on success, or [Error msg] if [s] is empty or unmarshaling fails.
 *)
 
-val init_http_server : string -> unit -> unit
-(** [init_http_server location ()] initializes message queues and starts the
+val init_http_server : string -> unit
+(** [init_http_server location] initializes message queues and starts the
     HTTP server for [location].
 
     Requires: {!config} must be set before calling this function.

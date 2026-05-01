@@ -113,7 +113,7 @@ let setup_config_file () =
       config := Some { Config_parser.locations = new_locations }
 
 (* Initialize HTTP server for this location *)
-let init_http_server current_location () =
+let init_http_server current_location =
   let () = setup_config_file () in
   match get_location_config current_location with
   | Error msg ->
